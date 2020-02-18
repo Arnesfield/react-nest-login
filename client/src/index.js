@@ -1,16 +1,19 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { HashRouter } from "react-router-dom";
-import App from "./App";
-import * as serviceWorker from "./serviceWorker";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { HashRouter } from 'react-router-dom';
+import App from './App';
+import { UserProvider } from './components/User/UserContext';
+import * as serviceWorker from './serviceWorker';
 
-import "./assets/scss/app.scss";
+import './assets/scss/app.scss';
 
 ReactDOM.render(
   <HashRouter>
-    <App />
+    <UserProvider>
+      <App />
+    </UserProvider>
   </HashRouter>,
-  document.getElementById("root")
+  document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change

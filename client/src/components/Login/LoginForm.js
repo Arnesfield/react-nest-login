@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { withRouter } from 'react-router-dom';
 import { http, httpHelper } from '../../http';
 import { useSetUnset } from '../../hooks/useSetUnset';
+import { UserContext } from '../User/UserContext';
 
 let LoginForm = ({ history }) => {
   const [username, setUsername] = useState('');
@@ -13,6 +14,8 @@ let LoginForm = ({ history }) => {
     () => {}
   );
 
+  const { setUser } = useContext(UserContext);
+
   function onLogin(event) {
     event.preventDefault();
 
@@ -21,8 +24,7 @@ let LoginForm = ({ history }) => {
       .post('auth/login', { username, password })
       .then(res => res.data)
       .then(user => {
-        // TODO: save user and redirect
-        console.log(user);
+        setUser(user);
         history.push('/');
       })
       .catch(error => {
