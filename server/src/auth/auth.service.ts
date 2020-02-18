@@ -1,32 +1,33 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
 import { User } from '../user/user.entity';
-import { LoginUserDto } from '../user/dto/login-user-dto';
+import { UserService } from '../user/user.service';
+import { LoginUserDto } from './dto/login-user-dto';
 
 @Injectable()
 export class AuthService {
-  private user: User;
+  @Inject() private readonly userService: UserService;
 
-  constructor() {
-    this.user = new User({
-      username: 'test',
-      password: 'password'
-    });
-    this.user.id = 1;
+  public async attemptGetUser(dto: LoginUserDto): Promise<User> {
+    try {
+      const { username, password } = dto;
+      const user: User = await this.userService.getOneWhere({
+        username,
+        deletedAt: null
+      });
+
+      const result = user && (await user.comparePassword(password));
+      if (!result) throw new Error();
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid username or password.');
+    }
   }
 
   public async attempt(dto: LoginUserDto): Promise<boolean> {
-    const { username, password } = this.user;
-    const attempt = dto.username === username && dto.password === password;
-
-    await new Promise(resolve => setTimeout(resolve, 1000)); // test
-
-    if (!attempt) {
-      throw new UnauthorizedException('Invalid username or password.');
-    }
-    return attempt;
+    return !!(await this.attemptGetUser(dto));
   }
 
-  public async login(dto: LoginUserDto) {
-    return (await this.attempt(dto)) && this.user;
+  public async login(dto: LoginUserDto): Promise<User> {
+    return await this.attemptGetUser(dto);
   }
 }
