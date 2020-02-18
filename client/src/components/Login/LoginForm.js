@@ -1,12 +1,36 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { withRouter } from 'react-router-dom';
+import { http, httpHelper } from '../../http';
+import { useSetUnset } from '../../hooks/useSetUnset';
 
-export function LoginForm() {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
+let LoginForm = ({ history }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
+  const load = useSetUnset(
+    (loading = true) => setLoading(loading),
+    () => {}
+  );
 
   function onLogin(event) {
     event.preventDefault();
-    // TODO: request to server
+
+    load.current();
+    http
+      .post('auth/login', { username, password })
+      .then(res => res.data)
+      .then(user => {
+        // TODO: save user and redirect
+        console.log(user);
+        history.push('/');
+      })
+      .catch(error => {
+        setErrorMsg(httpHelper.getHttpErrorMessage(error));
+      })
+      .then(() => {
+        load.current(false);
+      });
   }
 
   return (
@@ -18,6 +42,7 @@ export function LoginForm() {
             type="text"
             name="username"
             value={username}
+            disabled={loading}
             onChange={e => setUsername(e.target.value)}
           />
         </label>
@@ -30,16 +55,22 @@ export function LoginForm() {
             type="password"
             name="password"
             value={password}
+            disabled={loading}
             onChange={e => setPassword(e.target.value)}
           />
         </label>
       </div>
 
+      {loading && <div>Authenticating...</div>}
+      {errorMsg && !loading && <div style={{ color: 'red' }}>{errorMsg}</div>}
+
       <div>
-        <button>Login</button>
+        <button disabled={loading}>Login</button>
       </div>
     </form>
   );
-}
+};
 
+LoginForm = withRouter(LoginForm);
+export { LoginForm };
 export default LoginForm;

@@ -1,6 +1,6 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
-import * as View from "../views";
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
+import * as View from '../views';
 
 export default function RouterView() {
   return (
