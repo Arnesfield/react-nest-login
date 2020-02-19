@@ -24,6 +24,8 @@ let LoginForm = ({ history }) => {
       .post('auth/login', { username, password })
       .then(res => res.data)
       .then(user => {
+        // TODO: temporary role
+        user.roles = [1, 2];
         setUser(user);
         history.push('/');
       })

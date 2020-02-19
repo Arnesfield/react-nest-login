@@ -10,13 +10,10 @@ export const withAuth = Component => props => {
       return !!user;
     }
 
-    // TODO: stonks, temporary roles arr
-    const userRoles = user.roles || [user.id];
-    const rolesMatch = roles.some(role => userRoles.includes(role));
-    return rolesMatch;
+    return roles.some(role => user.roles.includes(role));
   };
 
-  return <Component {...props} {...{ isAuth }} />;
+  return <Component {...props} {...{ $user: user, isAuth }} />;
 };
 
 export default withAuth;
