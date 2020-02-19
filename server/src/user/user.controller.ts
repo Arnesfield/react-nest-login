@@ -6,6 +6,7 @@ import {
   Delete,
   UseInterceptors
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { RestController } from '../rest/rest.controller';
 import { User } from './user.entity';
@@ -15,6 +16,7 @@ import { CreateUserDto } from './dto/create-user-dto';
 import { TransformInterceptor } from '../shared/transform.interceptor';
 
 @UseInterceptors(TransformInterceptor)
+@UseGuards(AuthGuard('jwt'))
 @Controller('users')
 export class UserController extends RestController<
   User,

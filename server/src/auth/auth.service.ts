@@ -1,13 +1,16 @@
-import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { LoginUserDto } from './dto/login-user-dto';
+import { AuthTokenDto } from './dto/auth-token-dto';
 
 @Injectable()
 export class AuthService {
   @Inject() private readonly userService: UserService;
+  @Inject() private readonly jwtService: JwtService;
 
-  public async attemptGetUser(dto: LoginUserDto): Promise<User> {
+  public async attemptLoginUser(dto: LoginUserDto): Promise<User> {
     try {
       const { username, password } = dto;
       const user: User = await this.userService.getOneWhere({
@@ -19,15 +22,16 @@ export class AuthService {
       if (!result) throw new Error();
       return user;
     } catch (error) {
-      throw new UnauthorizedException('Invalid username or password.');
+      return null;
     }
   }
 
-  public async attempt(dto: LoginUserDto): Promise<boolean> {
-    return !!(await this.attemptGetUser(dto));
-  }
-
-  public async login(dto: LoginUserDto): Promise<User> {
-    return await this.attemptGetUser(dto);
+  public async login(user: User): Promise<AuthTokenDto> {
+    // guard handles the attempts
+    const payload: object = { username: user.username, sub: user.id };
+    return {
+      user,
+      accessToken: this.jwtService.sign(payload)
+    };
   }
 }
