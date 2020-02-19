@@ -1,5 +1,5 @@
 import React from 'react';
-import RouterView from './router';
+import { RouterView, withGuard } from './router';
 
 function App() {
   return (
@@ -13,4 +13,4 @@ function App() {
   );
 }
 
-export default App;
+export default withGuard(App);
