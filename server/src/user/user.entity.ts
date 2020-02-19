@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user-dto';
 
@@ -19,6 +20,7 @@ export class User {
   @Column()
   username: string;
 
+  @Exclude()
   @Column()
   password: string;
 

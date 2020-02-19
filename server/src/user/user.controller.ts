@@ -1,11 +1,20 @@
-import { Controller, UseGuards, Get, Param, Put, Delete } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Put,
+  Delete,
+  UseInterceptors
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { RestController } from '../rest/rest.controller';
 import { User } from './user.entity';
 import { UserExistsGuard } from './user.guard';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { CreateUserDto } from './dto/create-user-dto';
+import { TransformInterceptor } from '../shared/transform.interceptor';
 
+@UseInterceptors(TransformInterceptor)
 @Controller('users')
 export class UserController extends RestController<
   User,
