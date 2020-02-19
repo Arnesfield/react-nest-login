@@ -14,7 +14,7 @@ let LoginForm = ({ history }) => {
     () => {}
   );
 
-  const { setUser } = useContext(UserContext);
+  const { setUser, storeToken } = useContext(UserContext);
 
   function onLogin(event) {
     event.preventDefault();
@@ -22,7 +22,11 @@ let LoginForm = ({ history }) => {
     load.current();
     http
       .post('auth/login', { username, password })
-      .then(res => res.data)
+      .then(res => {
+        const { user, accessToken } = res.data;
+        storeToken(accessToken);
+        return user;
+      })
       .then(user => {
         // TODO: temporary role
         user.roles = [1, 2];
